@@ -59,15 +59,19 @@ vim.cmd "let g:neoformat_basic_format_align = 1"
 vim.cmd "let g:neoformat_basic_format_retab = 1"
 vim.cmd "let g:neoformat_basic_format_trim = 1"
 
-vim.cmd "\
-  augroup fmt \
-    autocmd! \
-    autocmd BufWritePre * undojoin | Neoformat \
-  augroup END \
-"
+vim.cmd [[ 
+  augroup fmt 
+    autocmd! 
+    autocmd BufWritePre * undojoin | Neoformat 
+  augroup END 
+]]
 
-vim.keymap.set("n", "<leader>f", ":Neoformat<Enter>", { desc = "Format without save" })
-vim.keymap.set("n", "<leader>F", ":Neoformat <bar> :w<Enter>", { desc = "Format and save" })
+vim.keymap.set("n", "<leader>f", vim.cmd.Neoformat, { desc = "Format without save" })
+
+vim.keymap.set("n", "<leader>F", function()
+  vim.cmd.Neoformat()
+  vim.cmd.w()
+end, { desc = "Format and save" })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
