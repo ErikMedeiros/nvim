@@ -73,24 +73,9 @@ require("lazy").setup({
         changedelete = { text = "~" },
       },
       on_attach = function(bufnr)
-        vim.keymap.set(
-          "n",
-          "<leader>gp",
-          require("gitsigns").prev_hunk,
-          { buffer = bufnr, desc = "[G]o to [P]revious Hunk" }
-        )
-        vim.keymap.set(
-          "n",
-          "<leader>gn",
-          require("gitsigns").next_hunk,
-          { buffer = bufnr, desc = "[G]o to [N]ext Hunk" }
-        )
-        vim.keymap.set(
-          "n",
-          "<leader>ph",
-          require("gitsigns").preview_hunk,
-          { buffer = bufnr, desc = "[P]review [H]unk" }
-        )
+        vim.keymap.set("n", "<leader>gp", require("gitsigns").prev_hunk, { buffer = bufnr, desc = "[G]o to [P]revious Hunk" })
+        vim.keymap.set("n", "<leader>gn", require("gitsigns").next_hunk, { buffer = bufnr, desc = "[G]o to [N]ext Hunk" })
+        vim.keymap.set("n", "<leader>ph", require("gitsigns").preview_hunk, { buffer = bufnr, desc = "[P]review [H]unk" })
       end,
     },
   },
@@ -163,7 +148,7 @@ require("lazy").setup({
   },
 
   -- formatter support
-  "mhartington/formatter.nvim",
+  "sbdchd/neoformat",
 }, {})
 
 require "custom.config.setup"
@@ -171,7 +156,6 @@ require "custom.config.telescope"
 require "custom.config.treesitter"
 require "custom.config.lsp"
 require "custom.config.cmp"
-require "custom.config.formatter"
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

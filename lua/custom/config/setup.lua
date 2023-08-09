@@ -44,63 +44,34 @@ vim.o.termguicolors = true
 vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
 
 -- Remap for dealing with word wrap
-vim.keymap.set(
-  "n",
-  "k",
-  "v:count == 0 ? 'gk' : 'k'",
-  { expr = true, silent = true }
-)
-vim.keymap.set(
-  "n",
-  "j",
-  "v:count == 0 ? 'gj' : 'j'",
-  { expr = true, silent = true }
-)
+vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
 
 -- Diagnostic keymaps
-vim.keymap.set(
-  "n",
-  "[d",
-  vim.diagnostic.goto_prev,
-  { desc = "Go to previous diagnostic message" }
-)
-vim.keymap.set(
-  "n",
-  "]d",
-  vim.diagnostic.goto_next,
-  { desc = "Go to next diagnostic message" }
-)
-vim.keymap.set(
-  "n",
-  "<leader>e",
-  vim.diagnostic.open_float,
-  { desc = "Open floating diagnostic message" }
-)
-vim.keymap.set(
-  "n",
-  "<leader>q",
-  vim.diagnostic.setloclist,
-  { desc = "Open diagnostics list" }
-)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic message" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next diagnostic message" })
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Open floating diagnostic message" })
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Open diagnostics list" })
 
 -- Formatting
-vim.keymap.set(
-  "n",
-  "<leader>f",
-  ":Format<Enter>",
-  { desc = "Format without save" }
-)
-vim.keymap.set(
-  "n",
-  "<leader>F",
-  ":FormatWrite<Enter>",
-  { desc = "Format and save" }
-)
+vim.cmd "let g:neoformat_try_node_exe = 1"
+vim.cmd "let g:neoformat_basic_format_align = 1"
+vim.cmd "let g:neoformat_basic_format_retab = 1"
+vim.cmd "let g:neoformat_basic_format_trim = 1"
+
+vim.cmd "\
+  augroup fmt \
+    autocmd! \
+    autocmd BufWritePre * undojoin | Neoformat \
+  augroup END \
+"
+
+vim.keymap.set("n", "<leader>f", ":Neoformat<Enter>", { desc = "Format without save" })
+vim.keymap.set("n", "<leader>F", ":Neoformat <bar> :w<Enter>", { desc = "Format and save" })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
-local highlight_group =
-  vim.api.nvim_create_augroup("YankHighlight", { clear = true })
+local highlight_group = vim.api.nvim_create_augroup("YankHighlight", { clear = true })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function()
