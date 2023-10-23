@@ -24,6 +24,7 @@ return {
                 yaml = { formatter.yaml.prettier },
                 markdown = { formatter.markdown.prettier },
                 json = { formatter.json.prettier },
+                jsonc = { formatter.json.prettier },
                 cs = { formatter.cs.dotnetformat },
                 ["*"] = { formatter.any.remove_trailing_whitespace },
             },
