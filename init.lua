@@ -1,16 +1,26 @@
-require("config")
+require("config.lazy")
 
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system({
-    "git",
-    "clone",
-    "--filter=blob:none",
-    "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",
-    lazypath,
-  })
-end
-vim.opt.rtp:prepend(lazypath)
+vim.cmd.colorscheme("min-theme-dark")
 
-require("lazy").setup("plugins")
+vim.opt.completeopt = "menuone,noinsert,preview,popup"
+vim.keymap.set('i', '<CR>', [[pumvisible() ? "<C-y>" : "<CR>"]], { expr = true, silent = true })
+
+vim.opt.mouse = "a"
+vim.opt.number = true
+vim.opt.relativenumber = true
+vim.opt.shiftwidth = 4
+vim.opt.signcolumn = "yes"
+vim.opt.termguicolors = true
+vim.opt.undofile = true
+
+vim.keymap.set({ "n", "v" }, "<space>", "<nop>")
+vim.keymap.set({ "n", "v" }, "<C-c>", "\"+y")
+
+vim.api.nvim_create_autocmd("TextYankPost", {
+  pattern = "*",
+  desc = "highlight yanked text",
+  group = vim.api.nvim_create_augroup("YankHighlight", { clear = true }),
+  callback = function()
+    vim.highlight.on_yank()
+  end,
+})
