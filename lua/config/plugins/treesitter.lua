@@ -25,6 +25,12 @@ return {
           enable = true
         }
       })
+
+      vim.wo.foldmethod = 'expr'
+      vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+      vim.wo.foldcolumn = '0'
+      vim.opt.foldenable = true
+      vim.opt.foldlevelstart = 99
     end,
   },
 }

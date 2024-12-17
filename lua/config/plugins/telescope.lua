@@ -23,6 +23,10 @@ return {
           find_files = { hidden = true },
           colorscheme = { enable_preview = true },
           current_buffer_fuzzy_find = { previewer = false },
+          buffers = {
+            layout_strategy = "center",
+            layout_config = { anchor = "CENTER" }
+          },
         },
         extensions = {
           fzf = {},
@@ -42,6 +46,7 @@ return {
       vim.keymap.set("n", "<space>sd", require("telescope.builtin").diagnostics)
       vim.keymap.set("n", "<space>cs", require("telescope.builtin").colorscheme)
       vim.keymap.set("n", "<space>/", require("telescope.builtin").current_buffer_fuzzy_find)
+      vim.keymap.set("n", "<space><space>", require("telescope.builtin").buffers)
 
       vim.keymap.set("n", "<space>bf", require("telescope").extensions.file_browser.file_browser)
       vim.keymap.set("n", "<space>bc", function()

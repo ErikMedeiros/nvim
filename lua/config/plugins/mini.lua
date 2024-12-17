@@ -3,8 +3,6 @@ return {
     "echasnovski/mini.nvim",
     version = false,
     config = function()
-      require("mini.git").setup({})
-      require('mini.diff').setup({})
       require('mini.move').setup({})
       require("mini.statusline").setup({})
 
