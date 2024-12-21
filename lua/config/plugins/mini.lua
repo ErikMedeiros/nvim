@@ -17,14 +17,6 @@ return {
           end
         }
       })
-
-      require("mini.completion").setup({
-        delay = { completion = 500 },
-        window = {
-          info = { border = "rounded", },
-          signature = { border = "rounded" },
-        }
-      })
     end,
   },
 }

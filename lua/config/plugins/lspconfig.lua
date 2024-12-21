@@ -9,24 +9,56 @@ return {
     },
   },
   {
+    'saghen/blink.cmp',
+    dependencies = 'rafamadriz/friendly-snippets',
+    version = '*',
+
+    config = function()
+      require("blink.cmp").setup({
+        keymap = { preset = 'enter' },
+
+        completion = {
+          keyword = { range = 'full' },
+          menu = { border = 'rounded' },
+          list = { selection = 'auto_insert' },
+          documentation = {
+            auto_show = true,
+            auto_show_delay_ms = 500,
+            window = { border = 'rounded' },
+          },
+        },
+
+        signature = {
+          enabled = true,
+          window = { border = 'rounded' },
+        },
+      })
+    end,
+  },
+  {
     "neovim/nvim-lspconfig",
     dependencies = { "Decodetalkers/csharpls-extended-lsp.nvim" },
     config = function()
-      require("lspconfig").csharp_ls.setup({})
+      local servers = {
+        csharp_ls = {},
+        eslint = {
+          on_attach = function(_, bufnr)
+            vim.api.nvim_create_autocmd("BufWritePre", { buffer = bufnr, command = "EslintFixAll", })
+            vim.keymap.set({ "n", "v" }, "<space>f", ":EslintFixAll<CR>", { silent = true, buffer = bufnr })
+          end
+        },
+        hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
+        lua_ls = {},
+        nixd = {},
+        tailwindcss = {},
+        ts_ls = {},
+        zls = {},
+      }
 
-      require("lspconfig").eslint.setup({
-        on_attach = function(_, bufnr)
-          vim.api.nvim_create_autocmd("BufWritePre", { buffer = bufnr, command = "EslintFixAll", })
-          vim.keymap.set({ "n", "v" }, "<space>f", ":EslintFixAll<CR>", { silent = true, buffer = bufnr })
-        end
-      })
-
-      require("lspconfig").hls.setup({ filetypes = { "haskell", "lhaskell", "cabal" } })
-      require("lspconfig").lua_ls.setup({})
-      require("lspconfig").nixd.setup({})
-      require("lspconfig").tailwindcss.setup({})
-      require("lspconfig").ts_ls.setup({})
-      require("lspconfig").zls.setup({})
+      for server, config in pairs(servers) do
+        config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
+        require("lspconfig")[server].setup(config)
+      end
 
       vim.api.nvim_create_autocmd("LspAttach", {
         group = vim.api.nvim_create_augroup("LspAttached", { clear = true }),
@@ -39,19 +71,25 @@ return {
             client.server_capabilities.documentRangeFormattingProvider = false
           end
 
-          vim.keymap.set("n", "grn", vim.lsp.buf.rename, { buffer = args.buf })
-          vim.keymap.set("i", "<C-s>", vim.lsp.buf.signature_help, { buffer = args.buf })
-          vim.keymap.set({ "n", "v" }, "gca", vim.lsp.buf.code_action, { buffer = args.buf })
-          vim.keymap.set("n", "grr", require("telescope.builtin").lsp_references, { buffer = args.buf })
-          vim.keymap.set("n", "gri", require("telescope.builtin").lsp_implementations, { buffer = args.buf })
-          vim.keymap.set("n", "gO", require("telescope.builtin").lsp_document_symbols, { buffer = args.buf })
+          local function map(mode, lhs, rhs, opts)
+            opts = opts or {}
+            opts.buffer = args.buf
+            vim.keymap.set(mode, lhs, rhs, opts)
+          end
+
+          map("n", "grn", vim.lsp.buf.rename)
+          map("i", "<C-s>", vim.lsp.buf.signature_help)
+          map({ "n", "v" }, "gca", vim.lsp.buf.code_action)
+          map("n", "grr", require("telescope.builtin").lsp_references)
+          map("n", "gri", require("telescope.builtin").lsp_implementations)
+          map("n", "gO", require("telescope.builtin").lsp_document_symbols)
 
           if vim.bo[args.buf].filetype == "cs" then
-            vim.keymap.set("n", "grd", ":Telescope csharpls_definition<CR>", { silent = true, buffer = args.buf })
-            vim.keymap.set("n", "grt", ":Telescope csharpls_definition<CR>", { silent = true, buffer = args.buf })
+            map("n", "grd", ":Telescope csharpls_definition<CR>", { silent = true })
+            map("n", "grt", ":Telescope csharpls_definition<CR>", { silent = true })
           else
-            vim.keymap.set("n", "grd", require("telescope.builtin").lsp_definitions, { buffer = args.buf })
-            vim.keymap.set("n", "grt", require("telescope.builtin").lsp_type_definitions, { buffer = args.buf })
+            map("n", "grd", require("telescope.builtin").lsp_definitions)
+            map("n", "grt", require("telescope.builtin").lsp_type_definitions)
           end
 
           if client.supports_method("textDocument/formatting", { bufnr = args.buf }) then
@@ -59,7 +97,7 @@ return {
               vim.lsp.buf.format({ bufnr = args.buf, id = client.id })
             end
 
-            vim.keymap.set({ "n", "v" }, "<space>f", format, { buffer = args.buf })
+            map({ "n", "v" }, "<space>f", format)
             vim.api.nvim_create_autocmd("BufWritePre", { buffer = args.buf, callback = format })
           end
         end,
