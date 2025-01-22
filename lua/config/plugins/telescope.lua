@@ -24,6 +24,7 @@ return {
           colorscheme = { enable_preview = true },
           current_buffer_fuzzy_find = { previewer = false },
           buffers = {
+            previewer = false,
             layout_strategy = "center",
             layout_config = { anchor = "CENTER" }
           },

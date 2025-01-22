@@ -12,7 +12,6 @@ return {
     'saghen/blink.cmp',
     dependencies = 'rafamadriz/friendly-snippets',
     version = '*',
-
     config = function()
       require("blink.cmp").setup({
         keymap = { preset = 'enter' },
@@ -20,7 +19,12 @@ return {
         completion = {
           keyword = { range = 'full' },
           menu = { border = 'rounded' },
-          list = { selection = 'auto_insert' },
+          list = {
+            selection = {
+              preselect = function(ctx) return ctx.mode ~= 'cmdline' end,
+              auto_insert = true,
+            }
+          },
           documentation = {
             auto_show = true,
             auto_show_delay_ms = 500,
@@ -40,6 +44,7 @@ return {
     dependencies = { "Decodetalkers/csharpls-extended-lsp.nvim" },
     config = function()
       local servers = {
+        biome = {},
         csharp_ls = {},
         eslint = {
           on_attach = function(_, bufnr)
@@ -51,7 +56,12 @@ return {
         lua_ls = {},
         nixd = {},
         tailwindcss = {},
-        ts_ls = {},
+        ts_ls = {
+          on_attach = function(client)
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+          end
+        },
         zls = {},
       }
 
@@ -65,11 +75,6 @@ return {
         callback = function(args)
           local client = vim.lsp.get_client_by_id(args.data.client_id)
           if not client then return end
-
-          if client.name == "ts_ls" then
-            client.server_capabilities.documentFormattingProvider = false
-            client.server_capabilities.documentRangeFormattingProvider = false
-          end
 
           local function map(mode, lhs, rhs, opts)
             opts = opts or {}
