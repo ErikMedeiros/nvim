@@ -5,7 +5,6 @@ return {
       "nvim-lua/plenary.nvim",
       "nvim-tree/nvim-web-devicons",
       "nvim-telescope/telescope-ui-select.nvim",
-      "nvim-telescope/telescope-file-browser.nvim",
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
     },
     config = function()
@@ -38,7 +37,6 @@ return {
 
       require("telescope").load_extension("fzf")
       require("telescope").load_extension("ui-select")
-      require("telescope").load_extension("file_browser")
       require("telescope").load_extension("csharpls_definition")
 
       vim.keymap.set("n", "<space>sh", require("telescope.builtin").help_tags)
@@ -48,14 +46,6 @@ return {
       vim.keymap.set("n", "<space>cs", require("telescope.builtin").colorscheme)
       vim.keymap.set("n", "<space>/", require("telescope.builtin").current_buffer_fuzzy_find)
       vim.keymap.set("n", "<space><space>", require("telescope.builtin").buffers)
-
-      vim.keymap.set("n", "<space>bf", require("telescope").extensions.file_browser.file_browser)
-      vim.keymap.set("n", "<space>bc", function()
-        require("telescope").extensions.file_browser.file_browser({
-          path = "%:p:h",
-          select_buffer = true,
-        })
-      end)
 
       vim.keymap.set("n", "<space>nv", function()
         require("telescope.builtin").find_files({ cwd = vim.fn.stdpath("config") })
