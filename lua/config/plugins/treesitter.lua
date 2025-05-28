@@ -1,36 +1,40 @@
+local ensure_installed = {
+  "bash", "c", "c_sharp", "cpp", "git_config", "git_rebase", "gitcommit", "html",
+  "javascript", "json", "jsonc", "lua", "markdown", "tsx", "typescript", "xml", "zig"
+}
+
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
+    lazy = false,
+    branch = "main",
+    build = function()
+      vim.cmd(":TSUpdate")
+      require("nvim-treesitter").install(ensure_installed)
+    end,
     config = function()
-      local install_dir = vim.fn.stdpath("data") .. "/tree-sitter-parser"
-      vim.opt.runtimepath:prepend(install_dir)
+      require("nvim-treesitter").setup()
 
-      ---@diagnostic disable-next-line: missing-fields
-      require("nvim-treesitter.configs").setup({
-        parser_install_dir = install_dir,
-        ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "markdown", "markdown_inline" },
-        auto_install = true,
+      local set = {}
+      for _, lang in ipairs(ensure_installed) do
+        for _, ft in ipairs(vim.treesitter.language.get_filetypes(lang)) do
+          set[ft] = true;
+        end
+      end
 
-        highlight = {
-          enable = true,
-          disable = function(_, buf)
-            local max_filesize = 100 * 1024
-            local ok, stats = pcall(vim.uv.fs_stat, vim.api.nvim_buf_get_name(buf))
-            return ok and stats and stats.size > max_filesize
-          end,
-        },
+      local filetypes = {}
+      for key, _ in pairs(set) do
+        table.insert(filetypes, key)
+      end
 
-        indent = {
-          enable = true
-        }
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = filetypes,
+        callback = function()
+          vim.treesitter.start()
+          vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
       })
-
-      -- vim.wo.foldmethod = 'expr'
-      -- vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-      -- vim.wo.foldcolumn = '0'
-      -- vim.opt.foldenable = true
-      -- vim.opt.foldlevelstart = 99
     end,
   },
 }
