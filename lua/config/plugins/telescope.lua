@@ -37,7 +37,6 @@ return {
 
       require("telescope").load_extension("fzf")
       require("telescope").load_extension("ui-select")
-      require("telescope").load_extension("csharpls_definition")
 
       vim.keymap.set("n", "<space>sh", require("telescope.builtin").help_tags)
       vim.keymap.set("n", "<space>sf", require("telescope.builtin").find_files)

@@ -1,127 +1,93 @@
+--- @param client vim.lsp.Client
+--- @param bufnr integer
+local on_attach = function(client, bufnr)
+  --- vim.keymap.set bound to bufnr
+  --- @param mode string|string[]
+  --- @param lhs string
+  --- @param rhs string|function
+  --- @param opts vim.keymap.set.Opts?
+  local function map(mode, lhs, rhs, opts)
+    opts = opts or {}
+    opts.buffer = bufnr
+    vim.keymap.set(mode, lhs, rhs, opts)
+  end
+
+  if client:supports_method('textDocument/definition') then
+    map("n", "grd", require("telescope.builtin").lsp_definitions, { desc = "vim.lsp.buf.definition" })
+  end
+
+  if client:supports_method('textDocument/typeDefinition*') then
+    map("n", "grt", require("telescope.builtin").lsp_type_definitions, { desc = "vim.lsp.buf.type_definition" })
+  end
+
+  if client:supports_method('textDocument/completion') then
+    vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = true })
+  end
+
+  if client:supports_method('textDocument/foldingRange') then
+    local win = vim.api.nvim_get_current_win()
+    vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
+  end
+
+  if client:supports_method('textDocument/formatting') then
+    --- @param opts vim.lsp.buf.format.Opts
+    local format = function(opts)
+      opts = opts or {}
+      opts.bufnr = bufnr
+      opts.id = client.id
+      vim.lsp.buf.format(opts)
+    end
+
+    map("n", "<space>f", format, { desc = "LSP: [F]ormat" })
+
+    if not client:supports_method('textDocument/willSaveWaitUntil') then
+      vim.api.nvim_create_autocmd('BufWritePre', {
+        group = vim.api.nvim_create_augroup('my.lsp', { clear = false }),
+        buffer = bufnr,
+        callback = function() format({ timeout_ms = 1000 }) end,
+      })
+    end
+  end
+
+  map("n", "grr", require("telescope.builtin").lsp_references, { desc = "vim.lsp.buf.references" })
+  map("n", "gri", require("telescope.builtin").lsp_implementations, { desc = "vim.lsp.buf.implementation" })
+  map("n", "gO", require("telescope.builtin").lsp_document_symbols, { desc = "vim.lsp.buf.document_symbol" })
+end
+
 return {
   {
     "neovim/nvim-lspconfig",
     dependencies = { "Decodetalkers/csharpls-extended-lsp.nvim" },
     config = function()
-      local servers = {
-        jsonls = {},
-        biome = {
-          root_dir = function(filename)
-            return vim.fs.root(filename, { 'biome.json', 'biome.jsonc' });
-          end
-        },
-        csharp_ls = {},
-        eslint = {
-          root_dir = function(filename)
-            return vim.fs.root(filename,
-              { ".eslintrc", ".eslintrc.js", ".eslintrc.cjs", ".eslintrc.yaml", ".eslintrc.yml", ".eslintrc.json",
-                "eslint.config.js", "eslint.config.mjs", "eslint.config.cjs", "eslint-config.ts" })
-          end,
-          on_attach = function(_, bufnr)
-            vim.api.nvim_create_autocmd("BufWritePre", { buffer = bufnr, command = "EslintFixAll", })
-            vim.keymap.set({ "n", "v" }, "<space>f", ":EslintFixAll<CR>", { silent = true, buffer = bufnr })
-          end
-        },
-        hls = { filetypes = { "haskell", "lhaskell", "cabal" } },
-        lua_ls = {},
-        nixd = {},
-        tailwindcss = {
-          root_dir = function(filename)
-            return vim.fs.root(filename,
-              { 'tailwind.config.js', 'tailwind.config.mjs', 'tailwind.config.cjs', 'tailwind.config.ts' });
-          end
-        },
-        ts_ls = {},
-        zls = {},
-      }
+      vim.lsp.enable("eslint")
+      vim.lsp.enable("jsonls")
+      vim.lsp.enable("lua_ls")
+      vim.lsp.enable("tailwindcss")
+      vim.lsp.enable("ts_ls")
+      vim.lsp.enable("zls")
+      vim.lsp.enable("biome")
+      vim.lsp.enable("csharp_ls")
+      vim.lsp.enable("hls")
 
-      for server, config in pairs(servers) do
-        config.capabilities = require("blink.cmp").get_lsp_capabilities(config.capabilities)
-        require("lspconfig")[server].setup(config)
-      end
+      require("csharpls_extended").buf_read_cmd_bind()
+      require("telescope").load_extension("csharpls_definition")
 
-      vim.api.nvim_create_autocmd("LspAttach", {
-        group = vim.api.nvim_create_augroup("LspAttached", { clear = true }),
+      vim.api.nvim_create_autocmd('LspAttach', {
+        group = vim.api.nvim_create_augroup('my.lsp', {}),
         callback = function(args)
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-          if not client then return end
-
-          local function map(mode, lhs, rhs, opts)
-            opts = opts or {}
-            opts.buffer = args.buf
-            vim.keymap.set(mode, lhs, rhs, opts)
-          end
-
-          if client.name == "ts_ls" then
-            client.server_capabilities.documentFormattingProvider = false
-            client.server_capabilities.documentRangeFormattingProvider = false
-          end
-
-          map("n", "grn", vim.lsp.buf.rename)
-          map("i", "<C-s>", vim.lsp.buf.signature_help)
-          map({ "n", "v" }, "gca", vim.lsp.buf.code_action)
-          map("n", "grr", require("telescope.builtin").lsp_references)
-          map("n", "gri", require("telescope.builtin").lsp_implementations)
-          map("n", "gO", require("telescope.builtin").lsp_document_symbols)
-
-          if vim.bo[args.buf].filetype == "cs" then
-            map("n", "grd", ":Telescope csharpls_definition<CR>", { silent = true })
-            map("n", "grt", ":Telescope csharpls_definition<CR>", { silent = true })
-          else
-            map("n", "grd", require("telescope.builtin").lsp_definitions)
-            map("n", "grt", require("telescope.builtin").lsp_type_definitions)
-          end
-
-          if client.supports_method("textDocument/formatting", { bufnr = args.buf }) then
-            local function format()
-              vim.lsp.buf.format({ bufnr = args.buf, id = client.id })
-            end
-
-            map({ "n", "v" }, "<space>f", format)
-            vim.api.nvim_create_autocmd("BufWritePre", { buffer = args.buf, callback = format })
-          end
+          local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+          on_attach(client, args.buf)
         end,
       })
-    end,
-  },
-  {
-    'saghen/blink.cmp',
-    dependencies = 'rafamadriz/friendly-snippets',
-    version = '*',
-    config = function()
-      require("blink.cmp").setup({
-        keymap = { preset = 'enter' },
 
-        completion = {
-          keyword = { range = 'full' },
-          menu = { border = 'rounded' },
-          list = {
-            selection = {
-              preselect = function(ctx) return ctx.mode ~= 'cmdline' end,
-              auto_insert = true,
-            }
-          },
-          documentation = {
-            auto_show = true,
-            auto_show_delay_ms = 500,
-            window = { border = 'rounded' },
-          },
-        },
-
-        signature = {
-          enabled = true,
-          window = { border = 'rounded' },
-        },
-      })
+      vim.lsp.handlers['client/registerCapability'] = (function(overridden)
+        return function(err, res, ctx)
+          local result = overridden(err, res, ctx)
+          local client = assert(vim.lsp.get_client_by_id(ctx.client_id))
+          on_attach(client, vim.api.nvim_get_current_buf())
+          return result
+        end
+      end)(vim.lsp.handlers['client/registerCapability'])
     end,
-  },
-  {
-    "folke/lazydev.nvim",
-    ft = "lua",
-    opts = {
-      library = {
-        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-      },
-    },
   },
 }
