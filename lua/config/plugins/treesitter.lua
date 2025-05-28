@@ -1,6 +1,9 @@
 local ensure_installed = {
-  "bash", "c", "c_sharp", "cpp", "git_config", "git_rebase", "gitcommit", "html",
-  "javascript", "json", "jsonc", "lua", "markdown", "tsx", "typescript", "xml", "zig"
+  "bash", "c", "c_sharp", "cpp",
+  "git_config", "git_rebase", "gitcommit", "html",
+  "javascript", "json", "jsonc", "lua",
+  "markdown", "tsx", "typescript", "xml",
+  "zig"
 }
 
 return {
@@ -22,15 +25,11 @@ return {
         end
       end
 
-      local filetypes = {}
-      for key, _ in pairs(set) do
-        table.insert(filetypes, key)
-      end
-
       vim.api.nvim_create_autocmd('FileType', {
-        pattern = filetypes,
+        pattern = vim.tbl_keys(set),
         callback = function()
           vim.treesitter.start()
+          vim.wo.foldmethod = 'expr'
           vim.wo.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
           vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         end,

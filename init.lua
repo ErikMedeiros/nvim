@@ -16,6 +16,7 @@ vim.opt.expandtab = true
 vim.opt.signcolumn = "yes"
 vim.opt.termguicolors = true
 vim.opt.undofile = true
+vim.opt.foldlevelstart = 99
 
 vim.keymap.set({ "n", "v" }, "<space>", "<nop>")
 vim.keymap.set({ "n", "v" }, "<C-c>", "\"+y")

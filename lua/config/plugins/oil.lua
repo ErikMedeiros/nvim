@@ -8,6 +8,8 @@ return {
       view_options = { show_hidden = true },
     })
 
-    vim.keymap.set('n', '<leader>bc', ':Oil<CR>', { desc = "[B]rowse [c]urrent directory" });
+    --- @type vim.keymap.set.Opts
+    local opts = { desc = "[B]rowse [c]urrent directory", silent = true }
+    vim.keymap.set('n', '<leader>bc', ':Oil<CR>', opts);
   end,
 }

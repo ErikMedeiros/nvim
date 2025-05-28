@@ -9,7 +9,7 @@ return {
       vim.notify = require("mini.notify").make_notify()
       require("mini.notify").setup({
         window = {
-          winblend = 100,
+          -- winblend = 100,
           config = function()
             local has_statusline = vim.o.laststatus > 0
             local pad = vim.o.cmdheight + (has_statusline and 1 or 0)
