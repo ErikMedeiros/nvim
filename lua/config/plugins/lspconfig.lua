@@ -29,7 +29,7 @@ local on_attach = function(client, bufnr)
     vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
   end
 
-  if client:supports_method('textDocument/formatting') then
+  if client.name ~= 'ts_ls' and client:supports_method('textDocument/formatting') then
     --- @param opts vim.lsp.buf.format.Opts
     local format = function(opts)
       opts = opts or {}
@@ -59,15 +59,17 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = { "Decodetalkers/csharpls-extended-lsp.nvim" },
     config = function()
+      vim.diagnostic.config({ virtual_text = true });
+
+      vim.lsp.enable("biome")
+      vim.lsp.enable("csharp_ls")
       vim.lsp.enable("eslint")
+      vim.lsp.enable("hls")
       vim.lsp.enable("jsonls")
       vim.lsp.enable("lua_ls")
       vim.lsp.enable("tailwindcss")
       vim.lsp.enable("ts_ls")
       vim.lsp.enable("zls")
-      vim.lsp.enable("biome")
-      vim.lsp.enable("csharp_ls")
-      vim.lsp.enable("hls")
 
       require("csharpls_extended").buf_read_cmd_bind()
       require("telescope").load_extension("csharpls_definition")
