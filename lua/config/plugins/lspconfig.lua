@@ -60,6 +60,7 @@ return {
       vim.lsp.enable("biome")
       vim.lsp.enable("csharp_ls")
       vim.lsp.enable("eslint")
+      vim.lsp.enable("gopls")
       vim.lsp.enable("hls")
       vim.lsp.enable("jsonls")
       vim.lsp.enable("lua_ls")
