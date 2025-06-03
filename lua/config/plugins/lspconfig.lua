@@ -20,10 +20,6 @@ local on_attach = function(client, bufnr)
     map("n", "grt", require("telescope.builtin").lsp_type_definitions, { desc = "vim.lsp.buf.type_definition" })
   end
 
-  if client:supports_method('textDocument/completion') then
-    vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = true })
-  end
-
   if client:supports_method('textDocument/foldingRange') then
     local win = vim.api.nvim_get_current_win()
     vim.wo[win][0].foldexpr = 'v:lua.vim.lsp.foldexpr()'
@@ -106,4 +102,18 @@ return {
       end)(vim.lsp.handlers['client/registerCapability'])
     end,
   },
+  {
+    'saghen/blink.cmp',
+    version = '1.*',
+    ---@module 'blink.cmp'
+    ---@type blink.cmp.Config
+    opts = {
+      keymap = { preset = 'default' },
+      appearance = { nerd_font_variant = 'mono' },
+      completion = { documentation = { auto_show = true, } },
+      sources = { default = { 'lsp', 'path', 'snippets', 'buffer' }, },
+      fuzzy = { implementation = "prefer_rust_with_warning" },
+    },
+    opts_extend = { "sources.default" }
+  }
 }
