@@ -22,6 +22,7 @@ vim.opt.cursorline = true
 
 vim.keymap.set({ "n", "v" }, "<space>", "<nop>")
 vim.keymap.set({ "n", "v" }, "<C-c>", "\"+y")
+vim.keymap.set("i", '<C-c>', '<Esc>', { noremap = true, silent = true })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
   pattern = "*",

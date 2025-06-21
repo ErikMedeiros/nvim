@@ -55,7 +55,7 @@ return {
     "neovim/nvim-lspconfig",
     dependencies = { "Decodetalkers/csharpls-extended-lsp.nvim" },
     config = function()
-      vim.diagnostic.config({ virtual_text = true });
+      vim.diagnostic.config({ virtual_text = true, severity_sort = true });
 
       vim.lsp.enable("biome")
       vim.lsp.enable("csharp_ls")
