@@ -17,7 +17,6 @@ return {
     set({ "n", "x" }, "<space>N", function() mc.matchAddCursor(-1) end, { desc = "Add cursor to previous match" })
     set({ "n", "x" }, "<space>S", function() mc.matchSkipCursor(-1) end, { desc = "Skip cursor on the previous match" })
 
-    set("n", "<space>/A", mc.searchAllAddCursors, { desc = "Add cursor to every search result" })
     set({ "n", "x" }, "<space>A", mc.matchAllAddCursors, { desc = "Add cursor to every match under the cursor" })
     set({ "n", "x" }, "g<c-a>", mc.sequenceIncrement, { desc = "Increment all cursors" })
     set({ "n", "x" }, "g<c-x>", mc.sequenceDecrement, { desc = "Decrement all cursors" })
