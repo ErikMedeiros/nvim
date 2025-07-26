@@ -3,7 +3,7 @@ vim.g.maplocalleader = ' '
 
 require("config.lazy")
 
-vim.cmd.colorscheme("min-theme-dark")
+vim.cmd.colorscheme("min-theme")
 
 vim.opt.completeopt = "menuone,noinsert,preview,popup"
 vim.keymap.set('i', '<CR>', [[pumvisible() ? "<C-y>" : "<CR>"]], { expr = true, silent = true })
