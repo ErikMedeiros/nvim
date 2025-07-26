@@ -32,6 +32,13 @@ local on_attach = function(client, bufnr)
       opts.bufnr = bufnr
       opts.id = client.id
       vim.lsp.buf.format(opts)
+
+      if client.name == 'biome' then
+        vim.lsp.buf.code_action({
+          apply = true,
+          context = { only = { "source.fixAll" }, diagnostics = {} }
+        })
+      end
     end
 
     map("n", "<space>f", format, { desc = "LSP: [F]ormat" })
@@ -48,6 +55,7 @@ local on_attach = function(client, bufnr)
   map("n", "grr", require("telescope.builtin").lsp_references, { desc = "vim.lsp.buf.references" })
   map("n", "gri", require("telescope.builtin").lsp_implementations, { desc = "vim.lsp.buf.implementation" })
   map("n", "gO", require("telescope.builtin").lsp_document_symbols, { desc = "vim.lsp.buf.document_symbol" })
+  map("n", "<C-s>", vim.lsp.buf.signature_help)
 end
 
 return {
@@ -57,7 +65,9 @@ return {
     config = function()
       vim.diagnostic.config({ virtual_text = true, severity_sort = true });
 
+      vim.lsp.config("biome", { cmd = { "npx", "biome", "lsp-proxy" } })
       vim.lsp.enable("biome")
+
       vim.lsp.enable("csharp_ls")
       vim.lsp.enable("eslint")
       vim.lsp.enable("gopls")
@@ -75,6 +85,14 @@ return {
         group = vim.api.nvim_create_augroup('my.lsp', {}),
         callback = function(args)
           local client = assert(vim.lsp.get_client_by_id(args.data.client_id))
+
+          if client.name == 'jsonls' then
+            local clients = vim.lsp.get_clients({ bufnr = args.buf })
+            for _, c in ipairs(clients) do
+              if c.name == 'biome' then return end
+            end
+          end
+
           on_attach(client, args.buf)
         end,
       })

@@ -1,7 +1,7 @@
 local ensure_installed = {
   "bash",
   "c", "c_sharp", "cpp", "css",
-  "git_config", "git_rebase", "gitcommit", "go",
+  "git_config", "git_rebase", "gitcommit", "glsl", "go",
   "haskell", "html",
   "javascript", "jsdoc", "json", "jsonc",
   "lua",
