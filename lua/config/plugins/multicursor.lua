@@ -12,10 +12,10 @@ return {
     set({ "n", "x" }, "<space><up>", function() mc.lineSkipCursor(-1) end, { desc = "Skip cursor above" })
     set({ "n", "x" }, "<space><down>", function() mc.lineSkipCursor(1) end, { desc = "Skip cursor below" })
 
-    set({ "n", "x" }, "<space>n", function() mc.matchAddCursor(1) end, { desc = "Add cursor to next match" })
-    set({ "n", "x" }, "<space>s", function() mc.matchSkipCursor(1) end, { desc = "Skip cursor on the next match" })
-    set({ "n", "x" }, "<space>N", function() mc.matchAddCursor(-1) end, { desc = "Add cursor to previous match" })
-    set({ "n", "x" }, "<space>S", function() mc.matchSkipCursor(-1) end, { desc = "Skip cursor on the previous match" })
+    set({ "n", "x" }, "<space>d", function() mc.matchAddCursor(1) end, { desc = "Add cursor to next match" })
+    set({ "n", "x" }, "<space>k", function() mc.matchSkipCursor(1) end, { desc = "Skip cursor on the next match" })
+    set({ "n", "x" }, "<space>D", function() mc.matchAddCursor(-1) end, { desc = "Add cursor to previous match" })
+    set({ "n", "x" }, "<space>K", function() mc.matchSkipCursor(-1) end, { desc = "Skip cursor on the previous match" })
 
     set({ "n", "x" }, "<space>A", mc.matchAllAddCursors, { desc = "Add cursor to every match under the cursor" })
     set({ "n", "x" }, "g<c-a>", mc.sequenceIncrement, { desc = "Increment all cursors" })
@@ -26,6 +26,9 @@ return {
     set("n", "<c-leftrelease>", mc.handleMouseRelease)
 
     set({ "n", "x" }, "<c-q>", mc.toggleCursor, { desc = "Toggle current cursor" })
+
+    set("x", "S", mc.splitCursors, { desc = "split selection at every match" })
+    set("x", "M", mc.matchCursors, { desc = "add cursor to every match" })
 
     -- Mappings defined in a keymap layer only apply when there are
     -- multiple cursors. This lets you have overlapping mappings.

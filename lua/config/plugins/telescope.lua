@@ -38,17 +38,19 @@ return {
       require("telescope").load_extension("fzf")
       require("telescope").load_extension("ui-select")
 
-      vim.keymap.set("n", "<space>sh", require("telescope.builtin").help_tags)
-      vim.keymap.set("n", "<space>sf", require("telescope.builtin").find_files)
-      vim.keymap.set("n", "<space>sg", require("telescope.builtin").live_grep)
-      vim.keymap.set("n", "<space>sd", require("telescope.builtin").diagnostics)
-      vim.keymap.set("n", "<space>cs", require("telescope.builtin").colorscheme)
-      vim.keymap.set("n", "<space>/", require("telescope.builtin").current_buffer_fuzzy_find)
-      vim.keymap.set("n", "<space><space>", require("telescope.builtin").buffers)
+      vim.keymap.set("n", "<space>sh", require("telescope.builtin").help_tags, { desc = "[S]earch [H]elp" })
+      vim.keymap.set("n", "<space>sf", require("telescope.builtin").find_files, { desc = "[S]earch [F]iles" })
+      vim.keymap.set("n", "<space>sg", require("telescope.builtin").live_grep, { desc = "[S]earch [G]rep" })
+      vim.keymap.set("n", "<space>sd", require("telescope.builtin").diagnostics, { desc = "[S]earch [D]iagnostics" })
+      vim.keymap.set("n", "<space>cs", require("telescope.builtin").colorscheme, { desc = "[C]hange [C]olorScheme" })
+      vim.keymap.set("n", "<space><space>", require("telescope.builtin").buffers, { desc = "Open Files" })
 
-      vim.keymap.set("n", "<space>nv", function()
-        require("telescope.builtin").find_files({ cwd = vim.fn.stdpath("config") })
-      end)
+      vim.keymap.set("n", "<space>/", require("telescope.builtin").current_buffer_fuzzy_find,
+        { desc = "Current Buffer Fuzzy" })
+
+      vim.keymap.set("n", "<space>nv",
+        function() require("telescope.builtin").find_files({ cwd = vim.fn.stdpath("config") }) end,
+        { desc = "Search [N]eo[v]im Config Files" })
     end
   }
 }
